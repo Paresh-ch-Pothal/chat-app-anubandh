@@ -1,35 +1,17 @@
-.homechat{
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+.home{
   height: 100%;
   width: 100%;
-  overflow-y: scroll;
-}
-
-.right{
+  border: 1px solid red;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
 }
 
-.chatBar{
-  position: relative;
-  display: flex;
-  gap: 10px;
-  top: 85%;
-}
-
-.chatTop{
-  display: flex;
-  justify-content: space-between;
-}
-
-.userDetails{
+.left{
+  height: 100%;
   width: 30%;
-  text-align: center;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
+  background-color: pink;
+}
+.right{
+  height: 100%;
+  width: 70%;
+  background-color: blue;
 }

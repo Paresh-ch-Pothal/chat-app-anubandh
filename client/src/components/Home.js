@@ -1,157 +1,95 @@
-import React from 'react';
+import React, { useState } from 'react'
+import { RiCloseLargeFill } from "react-icons/ri";
+import { SlClose } from "react-icons/sl";
+import { FaUser } from "react-icons/fa";
+import { CgProfile } from "react-icons/cg";
+import { IoSendSharp } from "react-icons/io5";
+import { MdOutlineArrowBackIos } from "react-icons/md";
+import { IoArrowBack } from "react-icons/io5";
+import { FaUserTie } from "react-icons/fa";
 
 const Home = () => {
+
+    const [showchats, setshowchats] = useState(false)
+
+    const handleshowchats = () => {
+        setshowchats(true);
+    };
+
+
     return (
-        <div style={{ backgroundColor: "#2a2d33", height: "100vh", width: "100vw", margin: 0 }}>
-            <div className="container-fluid text-center" style={{ height: "100%", padding: 0 }}>
-                <div className="row" style={{ height: "100%", display: 'flex', margin: 0, width: "100%" }}>
-                    {/* Left column (33%) */}
-                    <div style={{ width: "33.33%", height: "100%", border: "1px solid white", overflow: "scroll" }}>
-                        <ul className="list-group" style={{ marginTop: "40px" }}>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
+        <>
+            <div className='screen'>
+                <div className='left'>
+                    <div className='left1' >
+                        {/* <RiCloseLargeFill color='white' size={30} /> */}
+                        <div className='chathead'>Your Chats</div>
+                    </div>
 
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
+                    <div className='left2'>
+                        <ul className='left2-ul'>
+                            <div className='line'></div>
+                            <li className="list-group-item d-flex justify-content-between align-items-start p-3" style={{ width: "94%", color: "white" }}>
+                                <CgProfile size={25} />
+                                <div className="ms-2 me-auto">
 
+                                    <div className="fw-bold mx-2">Subheading</div>
                                 </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
+                                <span className="badge text-bg-primary rounded-pill">14</span>
 
                             </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
+                            <div className='line'></div>
 
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
+                            <li className="list-group-item d-flex justify-content-between align-items-start p-3" style={{ width: "94%", color: "white" }}>
+                                <CgProfile size={25} />
+                                <div className="ms-2 me-auto">
+                                    <div className="fw-bold mx-2">Subheading</div>
                                 </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
+                                <span className="badge text-bg-primary rounded-pill">14</span>
                             </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
-
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
+                            <div className='line'></div>
+                            <li className="list-group-item d-flex justify-content-between align-items-start p-3" style={{ width: "94%", color: "white" }}>
+                                <CgProfile size={25} />
+                                <div className="ms-2 me-auto">
+                                    <div className="fw-bold mx-2">Subheading</div>
                                 </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
+                                <span className="badge text-bg-primary rounded-pill">14</span>
                             </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
-
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
+                            <div className='line'></div>
+                            <li className="list-group-item d-flex justify-content-between align-items-start p-3" style={{ width: "94%", color: "white" }}>
+                                <CgProfile size={25} />
+                                <div className="ms-2 me-auto">
+                                    <div className="fw-bold mx-2">Subheading</div>
                                 </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
+                                <span className="badge text-bg-primary rounded-pill">14</span>
                             </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
-
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
-                                </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
-                            </li>
-
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
-
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
-                                </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
-
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
-                                </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
-
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
-                                </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
-
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
-                                </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between align-items-start m-3">
-
-                                <div className="ms-2 me-auto" style={{ display: "flex", flexDirection: "row", justifyContent: "center", gap: "10px", alignItems: "center" }}>
-                                    <a className="navbar-brand" href="#">
-                                        <img src="https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg" alt="" width="40" height="40" />
-                                    </a>
-                                    <div className="fw-bold" style={{ textAlign: "center" }}>Subheading</div>
-
-                                </div>
-                                <span className="badge text-bg-primary rounded-pill" style={{ margin: "auto 0px" }}>14</span>
-
-                            </li>
-
+                            <div className='line'></div>
                         </ul>
                     </div>
-
-                    {/* Right column (66%) */}
-                    <div style={{ width: "66%", height: "100%", border: "1px solid white", display: 'flex', flexDirection: 'column', position: "relative" }}>
-                        <nav className="navbar bg-body-tertiary" style={{ position: "sticky", top: "0", zIndex: "1",borderRadius: "5px" ,marginTop:"5px" }}>
-                            <div className="container-fluid">
-                                <a className="navbar-brand" href="#">Sticky top</a>
-                            </div>
-                        </nav>
-                        <div style={{ flexGrow: 1, display: 'flex', alignItems: 'flex-end' }}>
-                            <form className="d-flex" role="search" style={{ width: "100%", marginBottom: "10px" }}>
-                                <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" style={{ flex: 1 }} />
-                                <button className="btn btn-primary" type="submit">Search</button>
-                            </form>
+                </div>
+                <div className='right'>
+                    <div className='righttop'>
+                        <div className='righttopback'>
+                            <MdOutlineArrowBackIos className='backicon' onClick={handleshowchats} size={30}/>
+                            <FaUserTie size={25} className='mx-3' />
                         </div>
                     </div>
-
+                    <div className='rightbottom'>
+                        <div className='rightbinput'>
+                            <input type="search" placeholder='send' />
+                        </div>
+                        <div className='rightbsend'>
+                            <IoSendSharp size={25} color='white' />
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        </>
+    )
 }
 
-export default Home;
+export default Home
+
+
+
+

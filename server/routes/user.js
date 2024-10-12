@@ -24,5 +24,38 @@ router.post("/signup", async (req, res) => {
 })
 
 
+//...FetchAllUser...//
+router.get("/fetchalluser",async(req,res)=>{
+    try {
+        const users=await User.find();
+        return res.status(200).json({success: true,users})
+    } catch (error) {
+        return res.status(500).send("Some internal issue is there")
+    }
+})
+
+
+//...searchUser...//
+router.get("/searchuser",async(req,res)=>{
+    const search=req.query.search;
+    try {
+        if(!search){
+            return res.status(200).json({success: true,message: "No Search item is present"});
+        }
+        const users=await User.find({
+            $or: [
+                {name : {$regex: search,$options: "i"}}
+            ]
+        })
+        if(users.length == 0){
+            return res.status(200).json({success: false,message:"No User is present"});
+        }
+        return res.status(200).json({success: true,users})
+    } catch (error) {
+        return res.status(500).send("Some internal issue is there")
+    }
+})
+
+
 
 module.exports=router

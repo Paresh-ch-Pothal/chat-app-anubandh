@@ -102,7 +102,7 @@ router.post("/groupchatbaseddomain", fetchuser, async (req, res) => {
                     IsDomainSpecific: true,
                     isBatchChat: false,
                     participants: userInDomain.map(user => user._id), //adding all the users of the domain
-                    groupAdmin: req.user._id // here groupadmin is college so i change it later
+                    groupAdmin: userInDomain[0] // here groupadmin is college so i change it later
                 });
             }
             //if the groupchat already exist , update the participants by adding users which is not added in the group
@@ -162,7 +162,7 @@ router.post("/groupchatbasedbatch", fetchuser, async (req, res) => {
                     IsDomainSpecific: false,
                     isBatchChat: true,
                     participants: userInBatch.map(user => user._id), //adding all the users of the domain
-                    groupAdmin: req.user._id // here groupadmin is college so i change it later
+                    groupAdmin: userInBatch[0] // here groupadmin is college so i change it later and i think the college is the first to login and added in the group so i make the first object as admin
                 });
             }
             //if the groupchat already exist , update the participants by adding users which is not added in the group
@@ -198,15 +198,28 @@ router.post("/groupchatbasedbatch", fetchuser, async (req, res) => {
 //...remove participants from the group...//
 router.put("/removefromgroup",fetchuser,async(req,res)=>{
     const {chatId,userId}=req.body;
-    const removed=await Chat.findByIdAndUpdate(chatId,{
-        $pull:{participants: userId}
-    },{new: true}).populate("participants","-password").populate("groupAdmin","-password");
-    if(!removed){
-        return res.status(404).send({success: false,message: "Chat Not Found"});
+    try {
+        let chat=await Chat.findById(chatId).populate("groupAdmin","-password");
+        if(!chat){
+            return res.status(200).send({success: false,message: "Chat is not found"});
+        }
+        if(chat.groupAdmin._id.toString() !== req.user._id.toString()){
+            return res.status(403).send({success: false,message: "Unauthorized"})
+        }
+        const removed=await Chat.findByIdAndUpdate(chatId,{
+            $pull:{participants: userId}
+        },{new: true}).populate("participants","-password").populate("groupAdmin","-password");
+        if(!removed){
+            return res.status(404).send({success: false,message: "Chat Not Found"});
+        }
+        else{
+            return res.status(200).json({success: true,removed});
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send("Some internal error has been occured");
     }
-    else{
-        return res.status(200).json({success: true,removed});
-    }
+    
 })
 
 module.exports = router

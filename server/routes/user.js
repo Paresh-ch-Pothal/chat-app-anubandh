@@ -2,6 +2,10 @@ const express = require("express");
 const User = require("../models/user");
 const app = express();
 const router = express.Router();
+const bcrypt=require("bcryptjs");
+const JWT=require("jsonwebtoken");
+const JWT_SECRET="^@12@34#%^&8@1%6$5^&#1234";
+
 
 //... Signup ...//
 router.post("/signup", async (req, res) => {
@@ -14,10 +18,19 @@ router.post("/signup", async (req, res) => {
         return res.status(200).json({ success: false, message: "Someone alerady exist with the same email" });
     }
     try {
+        const salt=await bcrypt.genSalt(10);
+        const hashedPassword=await bcrypt.hash(password,salt);
         const user = await User.create({
-            name, email, password, batch, domain, pic
+            name, email, password: hashedPassword, batch, domain, pic
         })
-        return res.status(200).json({success: true,user})
+        const payload={
+            user:{
+                _id: user._id,
+                name: user.name
+            }
+        }
+        const authtoken=JWT.sign(payload,JWT_SECRET);
+        return res.status(200).json({success: true,user,authtoken})
     } catch (error) {
         return res.status(500).send("Some internal issue is there")
     }

@@ -222,4 +222,17 @@ router.put("/removefromgroup",fetchuser,async(req,res)=>{
     
 })
 
+
+//...fetching all the participants of a particular chat ...//
+router.get("/fetchparticipants/:chatId",async(req,res)=>{
+    try {
+        const chatId=req.params.chatId;
+        const participants=await Chat.findById(chatId).populate("participants");
+        return res.status(200).json(participants);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send("Some internal issue is present");
+    }
+})
+
 module.exports = router

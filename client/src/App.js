@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './components/Home';
 import Signup from './components/Signup';
 import Profile from './components/Profile';
+import Signin from './components/Signin';
 
 
 
@@ -16,6 +17,7 @@ function App() {
             <Route exact path="/" element={<Home />} />
             <Route exact path="/signup" element={<Signup />} />
             <Route exact path="/profile" element={<Profile />} />
+            <Route exact path="/signin" element={<Signin />} />
           </Routes>
         </div>
       </Router>

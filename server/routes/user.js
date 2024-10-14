@@ -70,5 +70,46 @@ router.get("/searchuser",async(req,res)=>{
 })
 
 
+// ... get then user by id ...//
+router.get("/getuser/:id",async(req,res)=>{
+    try {
+        const userId=req.params.id
+        const user=await User.findById(userId).select("-password");
+        return res.status(200).json(user);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send("Some error has been occured");
+    }
+})
+
+
+//...signin...//
+router.post("/signin",async(req,res)=>{
+    try {
+        const {email,password}=req.body;
+        const user=await User.findOne({email});
+        if(!user){
+            return res.status(404).json({success: false,error: "Invalid Credentials"});
+        }
+        const compaarePassword=await bcrypt.compare(password,user.password);
+        if(!compaarePassword){
+            return res.status(400).json({success: false,error: "Please try with correct information"})
+        }
+
+        const payload={
+            user:{
+                _id: user._id,
+                name: user.name
+            }
+        }
+
+        const authtoken=JWT.sign(payload,JWT_SECRET);
+        return res.json({success: true,authtoken})
+    } catch (error) {
+        return res.status(500).send("Some internal issue is there")
+    }
+})
+
+
 
 module.exports=router

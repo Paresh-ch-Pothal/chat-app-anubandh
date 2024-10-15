@@ -4,11 +4,13 @@ import { FaUserGraduate } from "react-icons/fa6";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { MdKeyboardBackspace } from "react-icons/md";
 import { Link, Navigate, useNavigate } from 'react-router-dom';
+import io from 'socket.io-client'
 
-
+var socket, selectedChatCompare;
 const Home = () => {
 
     const host = "http://localhost:5000";
+    const ENDPOINT = "http://localhost:5000";
     const [userchats, setuserchats] = useState([])
     const token = localStorage.getItem("token");
     let navigate = useNavigate();
@@ -16,6 +18,70 @@ const Home = () => {
     const [participants, setparticipants] = useState([])
     const [profile, setprofile] = useState({})
     const [users, setusers] = useState([])
+    const [messages, setmessages] = useState([])
+    const [newMessage, setnewMessage] = useState("");
+
+    const [socketConnected, setSocketConnected] = useState(false);
+
+    // useEffect(() => {
+    //     socket = io(ENDPOINT);
+    //     socket.emit("setup", profile);
+    //     socket.on('connected', () => setSocketConnected(true));
+    //     socket.on("message received", (newMessageReceived) => {
+    //         if (!selectedChatCompare || selectedChatCompare !== newMessageReceived.chatId._id) {
+    //             return;
+    //         }
+    //         setmessages(prevMessages => [...prevMessages, newMessageReceived]);
+    //     });
+    //     socket.on('disconnect', () => {
+    //         setSocketConnected(false);
+    //         // Optionally attempt reconnection or handle the state
+    //     });
+    //     return () => {
+    //         socket.off("message received");
+    //         socket.disconnect();
+    //     };
+    // }, []);
+
+
+    useEffect(() => {
+        socket = io(ENDPOINT);
+        socket.emit("setup", profile);
+    
+        socket.on('connected', () => setSocketConnected(true));
+    
+        socket.on("message received", (newMessageReceived) => {
+            if (!selectedChatCompare || selectedChatCompare !== newMessageReceived.chatId._id) {
+                return;
+            }
+    
+            setmessages(prevMessages => {
+                // Check if the message is already in the list
+                const messageExists = prevMessages.some(
+                    (message) => message._id === newMessageReceived._id
+                );
+    
+                if (messageExists) {
+                    return prevMessages; // No update needed
+                } else {
+                    return [...prevMessages, newMessageReceived];
+                }
+            });
+        });
+    
+        socket.on('disconnect', () => {
+            setSocketConnected(false);
+            // Optionally attempt reconnection or handle the state
+        });
+    
+        return () => {
+            socket.off("message received");
+            socket.disconnect();
+        };
+    }, []);
+    
+
+
 
     const handleprofile = async () => {
         try {
@@ -133,29 +199,11 @@ const Home = () => {
         }
     }
 
-    const [messages, setmessages] = useState([])
-    const [newMessage, setnewMessage] = useState("");
 
-    const handleSendMessage = async () => {
-        try {
-            const response = await fetch(`${host}/message/sendmessage`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    "auth-token": token
-                },
-                body: JSON.stringify({ content: newMessage, chatId: chatId })
-            });
-            const json = await response.json();
-            console.log(json)
-            setmessages([...messages, json.message]);
-            setnewMessage("");
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
-    const fetchMessage = async (chatId) => {
+
+
+    const fetchMessage = async () => {
         try {
             const response = await fetch(`${host}/message/fetchmessage/${chatId}`, {
                 method: "GET",
@@ -168,14 +216,45 @@ const Home = () => {
             const json = await response.json();
             console.log(json)
             setmessages(json.messages)
+            socket.emit("join chat", chatId);
         } catch (error) {
             console.log(error)
         }
     }
 
     useEffect(() => {
-        fetchMessage(chatId);
+        if (chatId) {
+            fetchMessage();
+            selectedChatCompare = chatId;
+        }
     }, [chatId])
+
+    const handleSendMessage = async () => {
+        if (!newMessage) {
+            return;
+        }
+        try {
+            const response = await fetch(`${host}/message/sendmessage`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "auth-token": token
+                },
+                body: JSON.stringify({ content: newMessage, chatId: chatId })
+            });
+            const json = await response.json();
+            setnewMessage("");
+            console.log(json)
+            setmessages(prevMessages => [...prevMessages, json.message]);
+            socket.emit("new message", json.message);
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+
 
 
 
@@ -332,7 +411,7 @@ const Home = () => {
                             <div key={index} className={msg.sender._id === profile._id ? 'my-message' : 'other-message'}>
                                 <div className='message-bubble'>
                                     <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} />
-                                    <span>{msg.sender.name}</span> : 
+                                    <span>{msg.sender.name}</span> :
                                     <span>{msg.content}</span>
                                 </div>
                             </div>

@@ -196,38 +196,38 @@ router.post("/groupchatbasedbatch", fetchuser, async (req, res) => {
 
 
 //...remove participants from the group...//
-router.put("/removefromgroup",fetchuser,async(req,res)=>{
-    const {chatId,userId}=req.body;
+router.put("/removefromgroup", fetchuser, async (req, res) => {
+    const { chatId, userId } = req.body;
     try {
-        let chat=await Chat.findById(chatId).populate("groupAdmin","-password");
-        if(!chat){
-            return res.status(200).send({success: false,message: "Chat is not found"});
+        let chat = await Chat.findById(chatId).populate("groupAdmin", "-password");
+        if (!chat) {
+            return res.status(200).send({ success: false, message: "Chat is not found" });
         }
-        if(chat.groupAdmin._id.toString() !== req.user._id.toString()){
-            return res.status(403).send({success: false,message: "Unauthorized"})
+        if (chat.groupAdmin._id.toString() !== req.user._id.toString()) {
+            return res.status(403).send({ success: false, message: "Unauthorized" })
         }
-        const removed=await Chat.findByIdAndUpdate(chatId,{
-            $pull:{participants: userId}
-        },{new: true}).populate("participants","-password").populate("groupAdmin","-password");
-        if(!removed){
-            return res.status(404).send({success: false,message: "Chat Not Found"});
+        const removed = await Chat.findByIdAndUpdate(chatId, {
+            $pull: { participants: userId }
+        }, { new: true }).populate("participants", "-password").populate("groupAdmin", "-password");
+        if (!removed) {
+            return res.status(404).send({ success: false, message: "Chat Not Found" });
         }
-        else{
-            return res.status(200).json({success: true,removed});
+        else {
+            return res.status(200).json({ success: true, removed });
         }
     } catch (error) {
         console.log(error)
         return res.status(500).send("Some internal error has been occured");
     }
-    
+
 })
 
 
 //...fetching all the participants of a particular chat ...//
-router.get("/fetchparticipants/:chatId",async(req,res)=>{
+router.get("/fetchparticipants/:chatId", async (req, res) => {
     try {
-        const chatId=req.params.chatId;
-        const participants=await Chat.findById(chatId).populate("participants");
+        const chatId = req.params.chatId;
+        const participants = await Chat.findById(chatId).populate("participants");
         return res.status(200).json(participants);
     } catch (error) {
         console.log(error)

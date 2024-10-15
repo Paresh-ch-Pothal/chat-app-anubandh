@@ -39,9 +39,10 @@ router.post("/signup", async (req, res) => {
 
 
 //...FetchAllUser...//
-router.get("/fetchalluser", async (req, res) => {
+router.get("/fetchalluser",fetchuser, async (req, res) => {
     try {
-        const users = await User.find();
+        const userId=req.user._id;
+        const users = await User.find({ _id: { $ne: userId } }).select("-password");
         return res.status(200).json({ success: true, users })
     } catch (error) {
         return res.status(500).send("Some internal issue is there")

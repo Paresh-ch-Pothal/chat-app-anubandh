@@ -31,7 +31,7 @@ const Profile = () => {
             <div className="card" style={{ width: "18rem" }}>
                 <img src={profile.pic} className="card-img-top" alt="Profile" />
                 <div className="card-body">
-                    <h5 className="card-title">Profile</h5>
+                    <h5 className="card-title">{profile.name}</h5>
                     <p className="card-text">Domain: {profile.domain ? profile.domain.join(", ") : 'N/A'}</p>
                     <p>Batch: {profile.batch || 'N/A'}</p>
                 </div>

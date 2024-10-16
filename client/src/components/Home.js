@@ -245,6 +245,8 @@ const Home = () => {
                 picData.append('upload_preset', 'chat-app');
                 picData.append('cloud_name', 'dubm71ocj');
 
+
+
                 try {
                     const res = await fetch('https://api.cloudinary.com/v1_1/dubm71ocj/image/upload', {
                         method: 'POST',
@@ -252,17 +254,7 @@ const Home = () => {
                     });
                     const result = await res.json();
                     imageUrl = result.secure_url;
-                    toast.success('File Uploaded Successfully just click send', {
-                        position: "top-left",
-                        autoClose: 1600,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                        transition: Slide,
-                    });
+
                     console.log("Uploaded Image URL:", imageUrl);
                 } catch (err) {
                     console.error("Image upload failed:", err);
@@ -298,8 +290,33 @@ const Home = () => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setimage(file); // Store the selected file
+        if (file.type === 'image/jpeg' || file.type === "image/png") {
+            setimage(file);
+            toast.success('File Uploaded Successfully just click send', {
+                position: "bottom-center",
+                autoClose: 1600,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Slide,
+            });
+
+        }
+        else {
+            toast.error('The file is not jpeg or png type', {
+                position: "bottom-center",
+                autoClose: 1600,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Slide,
+            });
         }
     };
 
@@ -309,6 +326,33 @@ const Home = () => {
     const handleImageClick = (image) => {
         setmodal(true)
         setclickImage(image)
+    }
+
+    const [searchusers, setsearchUsers] = useState([])
+    const [search, setsearch] = useState(false);
+    const [searchValue, setsearchValue] = useState('')
+
+    const handleSearchuser = async () => {
+        try {
+            const response = await fetch(`${host}/user/searchuser?search=${searchValue}`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "auth-token": token
+
+                },
+            })
+            const json = await response.json()
+            setsearchUsers(json.users || []);
+            setsearch(true)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const searchOnchange = (e) => {
+        setsearchValue(e.target.value)
+        setsearch(false)
     }
 
 
@@ -339,8 +383,8 @@ const Home = () => {
 
                         {/* // side drawer starts */}
                         <div>
-                            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
-                                Users
+                            <button class="btn" style={{ width: "27.5vw", backgroundColor: "#f6d4f6" }} type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+                                Chat With Others
                             </button>
 
                             <div class="offcanvas offcanvas-start" style={{ backgroundColor: "#2a2d33", color: "white", overflowY: "scroll" }} tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
@@ -350,19 +394,46 @@ const Home = () => {
                                 </div>
                                 <div class="offcanvas-body">
                                     <div>
-                                        {users.length === 0 ? (<div>No Users are present</div>) : (
-                                            users.map((user) => {
-                                                return (
-                                                    <div onClick={() => { handleSingleChats(user._id) }} key={user._id} className='singlechats my-3'>
-                                                        <img src={user.pic} height={50} width={50} alt="" />
-                                                        <div style={{ color: "black" }} className='chatsdetails'>
-                                                            <span>{user.name}</span>
-                                                            <span>Batch: {user.batch}</span>
+                                        <div style={{ display: "flex", gap: "10px" }}>
+                                            <input type="text" placeholder='Search User or Groups' className="form-control" aria-label="Dollar amount (with dot and two decimal places)" id='search' name='search' value={searchValue} onChange={searchOnchange} />
+                                            <button type="button" class="btn btn-info" onClick={handleSearchuser}>Search</button>
+                                        </div>
+
+                                        {search === false ? (
+                                            users.length === 0 ? (
+                                                <div>No Users are present</div>
+                                            ) : (
+                                                users.map((user) => {
+                                                    return (
+                                                        <div onClick={() => handleSingleChats(user._id)} key={user._id} className='singlechats my-3'>
+                                                            <img src={user.pic} height={50} width={50} alt="" />
+                                                            <div style={{ color: "black" }} className='chatsdetails'>
+                                                                <span>{user.name}</span>
+                                                                <span>Batch: {user.batch}</span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )
-                                            })
+                                                    )
+                                                })
+                                            )
+                                        ) : (
+                                            searchusers.length === 0 ? (
+                                                <div>No Users are present</div>
+                                            ) : (
+                                                searchusers.map((user) => {
+                                                    return (
+                                                        <div onClick={() => handleSingleChats(user._id)} key={user._id} className='singlechats my-3'>
+                                                            <img src={user.pic} height={50} width={50} alt="" />
+                                                            <div style={{ color: "black" }} className='chatsdetails'>
+                                                                <span>{user.name}</span>
+                                                                <span>Batch: {user.batch}</span>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            )
                                         )}
+
+
                                     </div>
                                     <div class="dropdown mt-3">
                                     </div>
@@ -371,7 +442,8 @@ const Home = () => {
                         </div>
                         {/* // side drawer ends */}
 
-                        <input type="text" placeholder='Search User or Groups' className="form-control" aria-label="Dollar amount (with dot and two decimal places)" /></div>
+
+                    </div>
                     <div className='chats'>
                         {userchats.length === 0 ? (<div style={{ color: "white", textAlign: "center" }}>No Chats is present</div>) : (
                             userchats.map((userchat) => {
@@ -488,7 +560,7 @@ const Home = () => {
                                     {/* <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} />
                                     <span>{msg.sender.name}</span> : */}
                                     {msg.image ? (
-                                        <div style={{display: "flex",justifyContent: "center",alignItems: "center",flexDirection:"column"}}>
+                                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
                                             <img src={msg.image} onClick={() => { handleImageClick(msg.image) }} alt="Message attachment" style={{ maxWidth: "300px", maxHeight: "300px", marginTop: "10px" }} />
                                             <div>
                                                 <span className='mx-2'>{msg.sender.name}:</span>
@@ -530,7 +602,7 @@ const Home = () => {
                                 ref={sendimagefile}
                                 style={{ display: 'none' }}
                             />
-                            <FaFileImage onClick={() => sendimagefile.current.click()} size={25} color='#e50a82' style={{ cursor: "pointer" }} />
+                            <FaFileImage onClick={() => sendimagefile.current.click()} size={25} color='#92ce92' style={{ cursor: "pointer" }} />
                             <IoSend onClick={handleSendMessage} style={{ cursor: "pointer" }} className='sendbutton' color='#e50a82' size={25} />
                         </div>
                     </div>

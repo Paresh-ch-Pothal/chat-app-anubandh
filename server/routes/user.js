@@ -51,17 +51,20 @@ router.get("/fetchalluser",fetchuser, async (req, res) => {
 
 
 //...searchUser...//
-router.get("/searchuser", async (req, res) => {
+router.get("/searchuser",fetchuser, async (req, res) => {
     const search = req.query.search;
+    const userId=req.user._id
     try {
         if (!search) {
             return res.status(200).json({ success: true, message: "No Search item is present" });
         }
         const users = await User.find({
-            $or: [
-                { name: { $regex: search, $options: "i" } }
+            $and: [
+                { _id: { $ne: userId } },  
+                { $or: [{ name: { $regex: search, $options: "i" } }] }  
             ]
-        })
+        }).select("-password"); 
+        
         if (users.length == 0) {
             return res.status(200).json({ success: false, message: "No User is present" });
         }

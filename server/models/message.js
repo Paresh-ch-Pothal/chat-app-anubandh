@@ -2,7 +2,9 @@ const mongoose=require("mongoose")
 const messageSchema=new mongoose.Schema({
     content:{
         type: String,
-        required: true
+    },
+    image:{
+        type: String
     },
     chatId:{
         type: mongoose.Schema.Types.ObjectId,

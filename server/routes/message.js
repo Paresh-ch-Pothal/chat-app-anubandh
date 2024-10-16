@@ -9,14 +9,15 @@ const router = express.Router();
 
 //...send Message ...//
 router.post("/sendmessage",fetchuser,async(req,res)=>{
-    const {content,chatId}=req.body;
-    if(!content || !chatId){
+    const {content,chatId,image}=req.body;
+    if(!chatId){
         return res.status(200).json({success: false,message: "Please provide all the parameters"})
     }
     var newMessage={
         sender: req.user._id,
-        content: content,
+        content: content || "",
         chatId: chatId,
+        image: image || null,
     };
     try {
         var message=await Message.create(newMessage);

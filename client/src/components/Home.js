@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { IoSend } from "react-icons/io5";
 import { FaUserGraduate } from "react-icons/fa6";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { MdKeyboardBackspace } from "react-icons/md";
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client'
+import { FaFileImage } from "react-icons/fa6";
+import { ToastContainer, Slide, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 var socket, selectedChatCompare;
 const Home = () => {
@@ -22,6 +25,9 @@ const Home = () => {
     const [newMessage, setnewMessage] = useState("");
 
     const [socketConnected, setSocketConnected] = useState(false);
+    const [image, setimage] = useState("");
+    const [pic, setpic] = useState("");
+    const sendimagefile = useRef(null);
 
     // useEffect(() => {
     //     socket = io(ENDPOINT);
@@ -47,20 +53,20 @@ const Home = () => {
     useEffect(() => {
         socket = io(ENDPOINT);
         socket.emit("setup", profile);
-    
+
         socket.on('connected', () => setSocketConnected(true));
-    
+
         socket.on("message received", (newMessageReceived) => {
             if (!selectedChatCompare || selectedChatCompare !== newMessageReceived.chatId._id) {
                 return;
             }
-    
+
             setmessages(prevMessages => {
                 // Check if the message is already in the list
                 const messageExists = prevMessages.some(
                     (message) => message._id === newMessageReceived._id
                 );
-    
+
                 if (messageExists) {
                     return prevMessages; // No update needed
                 } else {
@@ -68,18 +74,18 @@ const Home = () => {
                 }
             });
         });
-    
+
         socket.on('disconnect', () => {
             setSocketConnected(false);
             // Optionally attempt reconnection or handle the state
         });
-    
+
         return () => {
             socket.off("message received");
             socket.disconnect();
         };
     }, []);
-    
+
 
 
 
@@ -229,38 +235,101 @@ const Home = () => {
         }
     }, [chatId])
 
-    const handleSendMessage = async () => {
-        if (!newMessage) {
-            return;
-        }
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
         try {
+            let imageUrl = null;
+            if (image && (image.type === "image/jpeg" || image.type === 'image/png')) {
+                const picData = new FormData();
+                picData.append('file', image);
+                picData.append('upload_preset', 'chat-app');
+                picData.append('cloud_name', 'dubm71ocj');
+
+                try {
+                    const res = await fetch('https://api.cloudinary.com/v1_1/dubm71ocj/image/upload', {
+                        method: 'POST',
+                        body: picData,
+                    });
+                    const result = await res.json();
+                    imageUrl = result.secure_url;
+                    toast.success('File Uploaded Successfully just click send', {
+                        position: "top-left",
+                        autoClose: 1600,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        transition: Slide,
+                    });
+                    console.log("Uploaded Image URL:", imageUrl);
+                } catch (err) {
+                    console.error("Image upload failed:", err);
+                    return;
+                }
+            }
+            const messageData = {
+                content: newMessage,
+                chatId: chatId,
+                image: imageUrl || null
+            };
+            console.log(messageData)
+
             const response = await fetch(`${host}/message/sendmessage`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                     "auth-token": token
                 },
-                body: JSON.stringify({ content: newMessage, chatId: chatId })
+                body: JSON.stringify(messageData)
             });
             const json = await response.json();
+            console.log("Message sent:", json);
             setnewMessage("");
-            console.log(json)
+            setimage(null);
             setmessages(prevMessages => [...prevMessages, json.message]);
             socket.emit("new message", json.message);
 
         } catch (error) {
-            console.log(error)
+            console.error("Error sending message:", error);
         }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setimage(file); // Store the selected file
+        }
+    };
+
+
+    const [modal, setmodal] = useState(false)
+    const [clickimage, setclickImage] = useState("")
+    const handleImageClick = (image) => {
+        setmodal(true)
+        setclickImage(image)
     }
-
-
-
 
 
 
     return (
         <div>
+
             <div className='home'>
+                <ToastContainer
+                    position="top-left"
+                    autoClose={1600}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                    transition={Slide}
+                />
                 <div className='left'>
                     <div style={{ textAlign: "center", fontSize: "20px", color: "white", padding: "10px" }}>
 
@@ -331,8 +400,14 @@ const Home = () => {
                                                     : userchat.name
                                                 }
                                             </span>
-                                            {userchat.latestMessage && userchat.latestMessage.content ? (
-                                                <span>{userchat.latestMessage.content}</span>
+                                            {userchat.latestMessage ? (
+                                                userchat.latestMessage.content ? (
+                                                    <span>{userchat.latestMessage.content}</span>
+                                                ) : userchat.latestMessage.image ? (
+                                                    <span>Image</span>
+                                                ) : (
+                                                    <span>No New Message</span>
+                                                )
                                             ) : (
                                                 <span>No New Message</span>
                                             )}
@@ -410,16 +485,52 @@ const Home = () => {
                         {messages.map((msg, index) => (
                             <div key={index} className={msg.sender._id === profile._id ? 'my-message' : 'other-message'}>
                                 <div className='message-bubble'>
-                                    <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} />
-                                    <span>{msg.sender.name}</span> :
-                                    <span>{msg.content}</span>
+                                    {/* <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} />
+                                    <span>{msg.sender.name}</span> : */}
+                                    {msg.image ? (
+                                        <div style={{display: "flex",justifyContent: "center",alignItems: "center",flexDirection:"column"}}>
+                                            <img src={msg.image} onClick={() => { handleImageClick(msg.image) }} alt="Message attachment" style={{ maxWidth: "300px", maxHeight: "300px", marginTop: "10px" }} />
+                                            <div>
+                                                <span className='mx-2'>{msg.sender.name}:</span>
+                                                <span>{msg.content}</span>
+                                            </div>
+                                            {/* <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} /> */}
+
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: "flex", gap: "7px" }}>
+                                            <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} />
+                                            <span>{msg.sender.name}</span> :
+                                            <span>{msg.content}</span>
+                                        </div>
+                                    )}
+
+
                                 </div>
+                                {
+                                    modal && (
+                                        <div className='modalStyle' onClick={() => setmodal(false)}>
+                                            <img
+                                                src={clickimage}
+                                                alt="Large view"
+                                                style={{ maxWidth: "90%", maxHeight: "90%", margin: "auto", display: "block" }}
+                                            />
+                                        </div>
+                                    )
+                                }
                             </div>
                         ))}
                     </div>
                     <div className='rightbottom'>
                         <div className="sendbar">
                             <input type="text" id='newMessage' name='newMessage' value={newMessage} onChange={(e) => { setnewMessage(e.target.value) }} placeholder='Message' className="form-control" aria-label="Dollar amount (with dot and two decimal places)" />
+                            <input
+                                onChange={handleFileChange}
+                                type="file"
+                                ref={sendimagefile}
+                                style={{ display: 'none' }}
+                            />
+                            <FaFileImage onClick={() => sendimagefile.current.click()} size={25} color='#e50a82' style={{ cursor: "pointer" }} />
                             <IoSend onClick={handleSendMessage} style={{ cursor: "pointer" }} className='sendbutton' color='#e50a82' size={25} />
                         </div>
                     </div>

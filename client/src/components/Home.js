@@ -401,7 +401,7 @@ const Home = () => {
         const dateObj = new Date(createdAt);
         const options = { hour: '2-digit', minute: '2-digit', hour12: false };
         const time = dateObj.toLocaleTimeString('en-GB', options);
-    
+
         return time;
     };
 
@@ -534,7 +534,7 @@ const Home = () => {
                                             </span>
                                             {userchat.latestMessage ? (
                                                 userchat.latestMessage.content ? (
-                                                    <div style={{ display: "flex", justifyContent: "space-between"}}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between" }}>
                                                         <span>{userchat.latestMessage.content}</span>
                                                         <span>{timeFromCreatedAt(userchat.latestMessage.createdAt)}</span>
                                                     </div>
@@ -621,7 +621,6 @@ const Home = () => {
                         </div>
                     </div>
                     <div className='rightcenter'>
-                        {isToday(new Date()) ? (<h5 style={{textAlign: "center",color: "white"}}>Today</h5>) : (<h5 style={{textAlign: "center",color: "white"}}>{datefromCreatedAtFormatted(messages[0].createdAt)}</h5>)}
                         {messages.map((msg, index) => (
                             <div key={index} className={msg.sender._id === profile._id ? 'my-message' : 'other-message'}>
                                 <div className='message-bubble'>
@@ -631,8 +630,12 @@ const Home = () => {
                                         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
                                             <img src={msg.image} onClick={() => { handleImageClick(msg.image) }} alt="Message attachment" style={{ maxWidth: "300px", maxHeight: "300px", marginTop: "10px" }} />
                                             <div>
-                                                <span className='mx-2'>{msg.sender.name}:</span>
+                                                <span className='mx-2'>{msg.sender.name}</span>
                                                 <span>{msg.content}</span>
+                                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                                    <small style={{ fontSize: "12px" }} class="text-body-secondary">{dateFromCreatedNotFormatted(msg.createdAt)}</small>
+                                                    <small style={{ fontSize: "12px" }} class="text-body-secondary">{timeFromCreatedAt(msg.createdAt)}</small>
+                                                </div>
                                             </div>
                                             {/* <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} /> */}
 
@@ -642,7 +645,10 @@ const Home = () => {
                                             <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} />
                                             <span>{msg.sender.name}</span> :
                                             <span>{msg.content}</span>
-                                            <small style={{fontSize: "12px"}} class="text-body-secondary">{timeFromCreatedAt(msg.createdAt)}</small>
+                                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                                <small style={{ fontSize: "12px" }} class="text-body-secondary">{dateFromCreatedNotFormatted(msg.createdAt)}</small>
+                                                <small style={{ fontSize: "12px" }} class="text-body-secondary">{timeFromCreatedAt(msg.createdAt)}</small>
+                                            </div>
                                         </div>
                                     )}
 

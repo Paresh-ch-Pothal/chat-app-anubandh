@@ -415,6 +415,54 @@ const Home = () => {
         );
     };
 
+    const handleDeleteMessage = async (messageId) => {
+        console.log(messageId)
+        try {
+            const response = await fetch(`${host}/message/deletemessage/${messageId}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "auth-token": token
+                },
+            })
+            const json = await response.json();
+            console.log(json)
+            if (json.success) {
+                toast.success(json.message, {
+                    position: "top-left",
+                    autoClose: 1600,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Slide,
+                });
+            }
+            else {
+                toast.error(json.message, {
+                    position: "top-left",
+                    autoClose: 1600,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Slide,
+                });
+            }
+        } catch (error) {
+
+        }
+    }
+
+    const [editmessage, setEditmessage] = useState("")
+    const handleEditMessage = async (e) => {
+        console.log(e);
+    }
+
 
 
     return (
@@ -443,20 +491,20 @@ const Home = () => {
 
                         {/* // side drawer starts */}
                         <div>
-                            <button class="btn" style={{ width: "27.5vw", backgroundColor: "#f6d4f6" }} type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+                            <button className="btn" style={{ width: "27.5vw", backgroundColor: "#f6d4f6" }} type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
                                 Chat With Others
                             </button>
 
-                            <div class="offcanvas offcanvas-start" style={{ backgroundColor: "#2a2d33", color: "white", overflowY: "scroll" }} tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-                                <div class="offcanvas-header">
-                                    <h5 class="offcanvas-title" id="offcanvasExampleLabel">All Users</h5>
-                                    <button type="button" style={{ filter: "invert(100)" }} class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            <div className="offcanvas offcanvas-start" style={{ backgroundColor: "#2a2d33", color: "white", overflowY: "scroll" }} tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                                <div className="offcanvas-header">
+                                    <h5 className="offcanvas-title" id="offcanvasExampleLabel">All Users</h5>
+                                    <button type="button" style={{ filter: "invert(100)" }} className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                                 </div>
-                                <div class="offcanvas-body">
+                                <div className="offcanvas-body">
                                     <div>
                                         <div style={{ display: "flex", gap: "10px" }}>
                                             <input type="text" placeholder='Search User or Groups' className="form-control" aria-label="Dollar amount (with dot and two decimal places)" id='search' name='search' value={searchValue} onChange={searchOnchange} />
-                                            <button type="button" class="btn btn-info" onClick={handleSearchuser}>Search</button>
+                                            <button type="button" className="btn btn-info" onClick={handleSearchuser}>Search</button>
                                         </div>
 
                                         {search === false ? (
@@ -495,7 +543,7 @@ const Home = () => {
 
 
                                     </div>
-                                    <div class="dropdown mt-3">
+                                    <div className="dropdown mt-3">
                                     </div>
                                 </div>
                             </div>
@@ -535,7 +583,11 @@ const Home = () => {
                                             {userchat.latestMessage ? (
                                                 userchat.latestMessage.content ? (
                                                     <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                                        <span>{userchat.latestMessage.content}</span>
+                                                        <span>
+                                                            {userchat.latestMessage.content.length > 20
+                                                                ? userchat.latestMessage.content.slice(0, 20) + '...'
+                                                                : userchat.latestMessage.content}
+                                                        </span>
                                                         <span>{timeFromCreatedAt(userchat.latestMessage.createdAt)}</span>
                                                     </div>
                                                 ) : userchat.latestMessage.image ? (
@@ -623,7 +675,11 @@ const Home = () => {
                     <div className='rightcenter'>
                         {messages.map((msg, index) => (
                             <div key={index} className={msg.sender._id === profile._id ? 'my-message' : 'other-message'}>
-                                <div className='message-bubble'>
+
+                                <div data-bs-toggle="dropdown" aria-expanded="false" className='message-bubble'>
+                                    <ul className="dropdown-menu">
+                                        <li><Link className="dropdown-item" onClick={() => { handleDeleteMessage(msg._id) }} >Delete</Link></li>
+                                    </ul>
                                     {/* <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} />
                                     <span>{msg.sender.name}</span> : */}
                                     {msg.image ? (
@@ -633,8 +689,8 @@ const Home = () => {
                                                 <span className='mx-2'>{msg.sender.name}</span>
                                                 <span>{msg.content}</span>
                                                 <div style={{ display: "flex", flexDirection: "column" }}>
-                                                    <small style={{ fontSize: "12px" }} class="text-body-secondary">{dateFromCreatedNotFormatted(msg.createdAt)}</small>
-                                                    <small style={{ fontSize: "12px" }} class="text-body-secondary">{timeFromCreatedAt(msg.createdAt)}</small>
+                                                    <small style={{ fontSize: "12px" }} className="text-body-secondary">{dateFromCreatedNotFormatted(msg.createdAt)}</small>
+                                                    <small style={{ fontSize: "12px" }} className="text-body-secondary">{timeFromCreatedAt(msg.createdAt)}</small>
                                                 </div>
                                             </div>
                                             {/* <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} /> */}
@@ -646,8 +702,8 @@ const Home = () => {
                                             <span>{msg.sender.name}</span> :
                                             <span>{msg.content}</span>
                                             <div style={{ display: "flex", flexDirection: "column" }}>
-                                                <small style={{ fontSize: "12px" }} class="text-body-secondary">{dateFromCreatedNotFormatted(msg.createdAt)}</small>
-                                                <small style={{ fontSize: "12px" }} class="text-body-secondary">{timeFromCreatedAt(msg.createdAt)}</small>
+                                                <small style={{ fontSize: "12px" }} className="text-body-secondary">{dateFromCreatedNotFormatted(msg.createdAt)}</small>
+                                                <small style={{ fontSize: "12px" }} className="text-body-secondary">{timeFromCreatedAt(msg.createdAt)}</small>
                                             </div>
                                         </div>
                                     )}

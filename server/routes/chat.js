@@ -235,4 +235,28 @@ router.get("/fetchparticipants/:chatId", async (req, res) => {
     }
 })
 
+
+//... delete a particular chat by its chatId
+router.delete("/deletechat/:chatId",fetchuser,async(req,res)=>{
+    const chatId=req.params.chatId;
+    const userId=req.user._id;
+    try {
+        const chat =await Chat.findById(chatId);
+        if(!chat){
+            return res.status(200).send("No chats is present")
+        }
+        if(chat.isBatchChat == true || chat.IsDomainSpecific == true){
+            chat.participants=chat.participants.filter(user => user.toString() !== userId);
+            await chat.save()
+        }
+        await Message.deleteMany({chatId: chatId})
+        await Chat.findByIdAndDelete(chatId)
+
+        return res.status(200).json({success: true,message: "Chat deleted Successfully"});
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send("Some internal issue is present");
+    }
+})
+
 module.exports = router

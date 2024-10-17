@@ -355,6 +355,66 @@ const Home = () => {
         setsearch(false)
     }
 
+    const handledeleteChat = async () => {
+        try {
+            const response = await fetch(`${host}/chat/deletechat/${chatId}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    "auth-token": token
+
+                },
+            })
+            const json = await response.json()
+            if (json.success) {
+                toast.success(json.message, {
+                    position: "top-left",
+                    autoClose: 1600,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Slide,
+                });
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const datefromCreatedAtFormatted = (createdAt) => {
+        const dateObj = new Date(createdAt);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = dateObj.toLocaleDateString('en-US', options);
+        return formattedDate;
+    };
+
+    const dateFromCreatedNotFormatted = (createdAt) => {
+        const dateObj = new Date(createdAt);
+        const date = dateObj.toLocaleDateString();
+        return date;
+    }
+
+    const timeFromCreatedAt = (createdAt) => {
+        const dateObj = new Date(createdAt);
+        const options = { hour: '2-digit', minute: '2-digit', hour12: false };
+        const time = dateObj.toLocaleTimeString('en-GB', options);
+    
+        return time;
+    };
+
+
+    const isToday = (date) => {
+        const today = new Date();
+        return (
+            date.getFullYear() === today.getFullYear() &&
+            date.getMonth() === today.getMonth() &&
+            date.getDate() === today.getDate()
+        );
+    };
+
 
 
     return (
@@ -474,9 +534,15 @@ const Home = () => {
                                             </span>
                                             {userchat.latestMessage ? (
                                                 userchat.latestMessage.content ? (
-                                                    <span>{userchat.latestMessage.content}</span>
+                                                    <div style={{ display: "flex", justifyContent: "space-between"}}>
+                                                        <span>{userchat.latestMessage.content}</span>
+                                                        <span>{timeFromCreatedAt(userchat.latestMessage.createdAt)}</span>
+                                                    </div>
                                                 ) : userchat.latestMessage.image ? (
-                                                    <span>Image</span>
+                                                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                                        <span>Image</span>
+                                                        <span>{timeFromCreatedAt(userchat.latestMessage.createdAt)}</span>
+                                                    </div>
                                                 ) : (
                                                     <span>No New Message</span>
                                                 )
@@ -550,10 +616,12 @@ const Home = () => {
                             <ul className="dropdown-menu">
                                 <li><Link className="dropdown-item" to="/profile">View Profile</Link></li>
                                 <li><Link onClick={handleLogout} className="dropdown-item">Logout</Link></li>
+                                <li><Link onClick={handledeleteChat} className="dropdown-item">Delete Chat</Link></li>
                             </ul>
                         </div>
                     </div>
                     <div className='rightcenter'>
+                        {isToday(new Date()) ? (<h5 style={{textAlign: "center",color: "white"}}>Today</h5>) : (<h5 style={{textAlign: "center",color: "white"}}>{datefromCreatedAtFormatted(messages[0].createdAt)}</h5>)}
                         {messages.map((msg, index) => (
                             <div key={index} className={msg.sender._id === profile._id ? 'my-message' : 'other-message'}>
                                 <div className='message-bubble'>
@@ -570,10 +638,11 @@ const Home = () => {
 
                                         </div>
                                     ) : (
-                                        <div style={{ display: "flex", gap: "7px" }}>
+                                        <div style={{ display: "flex", gap: "7px", justifyContent: "center", alignItems: "center" }}>
                                             <img src={msg.sender.pic} alt={msg.sender.name} height={30} width={30} />
                                             <span>{msg.sender.name}</span> :
                                             <span>{msg.content}</span>
+                                            <small style={{fontSize: "12px"}} class="text-body-secondary">{timeFromCreatedAt(msg.createdAt)}</small>
                                         </div>
                                     )}
 

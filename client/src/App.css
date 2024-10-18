@@ -19,17 +19,11 @@
 
 .signup-form {
   max-width: 400px;
-  /* Set maximum width for the form */
   width: 100%;
-  /* Ensure it takes the full width up to the max */
   padding: 20px;
-  /* Add some padding */
   border: 1px solid #ccc;
-  /* Optional: Add a border */
   border-radius: 5px;
-  /* Optional: Add rounded corners */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  /* Optional: Add shadow for depth */
 }
 
 /* left part css */

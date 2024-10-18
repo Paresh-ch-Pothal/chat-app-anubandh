@@ -8,6 +8,7 @@ import io from 'socket.io-client'
 import { FaFileImage } from "react-icons/fa6";
 import { ToastContainer, Slide, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import { RxCross1 } from "react-icons/rx";
 
 var socket, selectedChatCompare;
 const Home = () => {
@@ -134,7 +135,8 @@ const Home = () => {
 
     const handleLogout = async () => {
         localStorage.removeItem("token");
-        navigate("/signup")
+        navigate("/signin")
+        window.location.reload();
     }
 
     const handleclickchats = (e) => {
@@ -200,6 +202,9 @@ const Home = () => {
             });
             const json = await response.json()
             console.log(json);
+            setTimeout(() => {
+                window.location.reload()
+            }, 300);
         } catch (error) {
             console.log(error)
         }
@@ -378,6 +383,9 @@ const Home = () => {
                     theme: "dark",
                     transition: Slide,
                 });
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             }
         } catch (error) {
             console.log(error)
@@ -439,6 +447,10 @@ const Home = () => {
                     theme: "dark",
                     transition: Slide,
                 });
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1500);
+
             }
             else {
                 toast.error(json.message, {
@@ -454,13 +466,41 @@ const Home = () => {
                 });
             }
         } catch (error) {
+            console.log(error)
 
         }
     }
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    const [editmessage, setEditmessage] = useState("")
-    const handleEditMessage = async (e) => {
-        console.log(e);
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+            console.log(windowWidth);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const handleClickBackIcon = () => {
+        const width = windowWidth;
+    
+        if (width <= 900) { 
+            document.getElementsByClassName('left')[0].style.display = "block";
+            document.getElementsByClassName('left')[0].style.width = "100%";
+            document.getElementsByClassName('right')[0].style.display = "none";
+        }
+    };
+
+    const handleClickCloseIcon=()=>{
+        const width=windowWidth;
+        if(width <=900){
+            document.getElementsByClassName('left')[0].style.display = "none";
+            document.getElementsByClassName('right')[0].style.width = "100%";
+            document.getElementsByClassName('right')[0].style.display = "block";
+        }
     }
 
 
@@ -483,9 +523,9 @@ const Home = () => {
                     transition={Slide}
                 />
                 <div className='left'>
-                    <div style={{ textAlign: "center", fontSize: "20px", color: "white", padding: "10px" }}>
-
-                        Your Chats
+                    <div className='chat-header'>
+                        <div className='chat-title'>Your Chats</div>
+                        <div className='close-icon'><RxCross1 onClick={handleClickCloseIcon} size={25} /></div>
                     </div>
                     <div style={{ padding: "10px", display: "flex", gap: "5px" }} className='searchUser'>
 
@@ -646,7 +686,7 @@ const Home = () => {
                             </div>
 
 
-                            <MdKeyboardBackspace className='backicon' size={25} style={{ cursor: "pointer" }} /></div>
+                            <MdKeyboardBackspace onClick={ handleClickBackIcon } className='backicon' size={25} style={{ cursor: "pointer" }} /></div>
                         <div>
                             {participants.IsDomainSpecific ? (
                                 <h5>Domain: {participants.name}</h5>
@@ -673,6 +713,7 @@ const Home = () => {
                         </div>
                     </div>
                     <div className='rightcenter'>
+                        {!chatId && <h1 className='' style={{ color: "#585656", textAlign: "center", position: "relative", top: "48%" }}>Select A Chat to Chat</h1>}
                         {messages.map((msg, index) => (
                             <div key={index} className={msg.sender._id === profile._id ? 'my-message' : 'other-message'}>
 

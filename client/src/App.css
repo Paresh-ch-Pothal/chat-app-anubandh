@@ -3,7 +3,9 @@
   width: 100vw;
   border: 1px solid red;
   display: flex;
-  background: linear-gradient(178deg, #382d33, #292e34);
+  /* background: linear-gradient(178deg, #011225, #101010); */
+  /* background-color: black; */
+  background: linear-gradient(to bottom right, #1b1c20, #232730);
   justify-content: space-between;
   overflow: hidden;
 }
@@ -27,7 +29,6 @@
 }
 
 /* left part css */
-
 .chat-header {
   text-align: center;
   font-size: 20px;
@@ -116,7 +117,7 @@
 
 .my-message {
   align-self: flex-end;
-  background-color: #e0ffe0;
+  background-color: #bfd5f0;
   color: #000;
   padding: 5px 10px;
   border-radius: 10px;
